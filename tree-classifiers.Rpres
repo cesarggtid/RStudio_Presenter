@@ -1,0 +1,76 @@
+Coursera Assigment: Tree-classifiers
+========================================================
+author: Cesar Garcia
+date: 20150322
+
+Tree Classifiers - Basic comparison
+========================================================
+
+We will use a simple shiny application to allow the user
+to compare several tree classifiers in the well known dataset iris
+in a very easy way.
+
+The selectable models are:
+
+- ctree
+- ctree2
+- rpart
+- rpart2
+
+Ctree classifiers
+========================================================
+
+```{r echo=FALSE, fig.width=14, fig.height=8}
+library(datasets)
+library(caret)
+library(party)
+
+  set.seed(1234)
+  
+  intrain <- createDataPartition(y=iris$Species,p=0.7,list=FALSE)
+  
+  trainData <- iris[intrain,]
+  testData <- iris[-intrain,]
+
+  modFitCtree <- train(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, method="ctree", data=trainData)
+
+  plot(modFitCtree$finalModel)
+
+```
+
+If one of the ctree family classifiers is selected, the user can see the plot is clear and give a lot of information about the model
+
+Rpart classifiers
+========================================================
+
+```{r echo=FALSE, fig.width=14, fig.height=8}
+library(datasets)
+library(caret)
+library(e1071)
+library(rpart)
+library(rpart.plot)
+
+  modFitRpart <- train(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, method="rpart", data=trainData)
+
+  plot(modFitRpart$finalModel)
+
+  text(modFitRpart$finalModel,use.n=TRUE,all=TRUE)
+
+```
+
+In the other hand if one of the rpart family classifiers is selected, the user can see a plot quite poorer than ctree's one. The cut values for Petal Lenght variable are different too
+
+Classifiers accuracy
+========================================================
+___Ctree___
+```{r echo=FALSE}
+  testPredCtree <- predict(modFitCtree, newdata = testData)
+  table(testPredCtree, testData$Species)
+```
+___Rpart___
+```{r echo=FALSE}
+  testPredRpart <- predict(modFitRpart, newdata = testData)
+  table(testPredRpart, testData$Species)
+```
+
+Accuracy (ctree and rpart) is equal for the same test dataset
